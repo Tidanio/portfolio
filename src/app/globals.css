@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+/* ================================================================== */
+/*  DESIGN TOKENS — Dark theme por defecto                            */
+/*  Definimos los valores como variables CSS en :root y los mapeamos  */
+/*  a tokens de Tailwind v4 con `@theme inline`. Esto deja la puerta  */
+/*  abierta a un futuro modo claro (basta con sobreescribir :root).   */
+/* ================================================================== */
+:root {
+  /* Superficies */
+  --background: #0a0a0b; /* fondo global, casi negro */
+  --surface: #111114; /* cards / paneles */
+  --foreground: #ededed; /* texto principal */
+  --muted: #9b9ba3; /* texto secundario */
+  --border: #1f1f24; /* divisores sutiles */
+
+  /* Acento (cámbialo por tu color de marca) */
+  --accent: #6366f1;
+  --accent-foreground: #ffffff;
+
+  /* Glassmorphism */
+  --glass: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-glass: var(--glass);
+  --color-glass-border: var(--glass-border);
+
+  /* Tipografía (las variables las inyecta next/font en <html>) */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* ================================================================== */
+/*  BASE                                                              */
+/* ================================================================== */
+@layer base {
+  html {
+    color-scheme: dark; /* scrollbars e inputs nativos en oscuro */
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+}
+
+/* ================================================================== */
+/*  UTILIDAD: glassmorphism sutil  →  class="glass"                   */
+/* ================================================================== */
+@utility glass {
+  /* Capa translúcida + borde: la parte reutilizable que sí compila.
+     OJO: el desenfoque (backdrop-filter) NO se pone aquí — el pipeline de build
+     (Lightning CSS) lo elimina de las reglas CSS de autor en este setup. Se
+     aplica inline en los componentes glass (ver HeroSection / futuro GlassPanel),
+     que es donde sí surte efecto. */
+  background-color: var(--color-glass);
+  border: 1px solid var(--color-glass-border);
+}
+
+/* ================================================================== */
+/*  LENIS (scroll suave) — CSS requerido por la librería              */
+/* ================================================================== */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* ================================================================== */
+/*  CURSOR PERSONALIZADO                                              */
+/*  Oculta el cursor nativo solo cuando el componente CustomCursor    */
+/*  está activo (añade .custom-cursor al body) y solo con ratón.      */
+/* ================================================================== */
+@media (pointer: fine) {
+  body.custom-cursor,
+  body.custom-cursor * {
+    cursor: none;
+  }
+}
